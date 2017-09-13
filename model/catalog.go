@@ -29,10 +29,10 @@ type Service struct {
 	Tags            []string      `json:"tags, omitempty"`
 	Requires        []string      `json:"requires, omitempty"`
 	Bindable        bool          `json:"bindable"`
-	Metadata        interface{}   `json:"metadata, omitempty"`
-	DashboardClient interface{}   `json:"dashboard_client, omitempty"`
 	PlanUpdateable  bool          `json:"plan_updateable, omitempty"`
 	Plans           []ServicePlan `json:"plans"`
+	Metadata        interface{}   `json:"metadata, omitempty"`
+	DashboardClient interface{}   `json:"dashboard_client, omitempty"`
 }
 
 // ServicePlan represents the different plans available for a database service.

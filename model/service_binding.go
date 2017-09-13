@@ -30,12 +30,14 @@ type Database struct {
 	Password string `json:"password"`
 }
 
-// BindResponse contains the credentials that may be used by applications or users to access the database service.
+// BindResponse contains the credentials that may be used by applications or
+// users to access the database service.
 type BindResponse struct {
 	Credentials interface{} `json:"credentials, omitempty"`
 }
 
-// Credentials represents the set of information used by an application or a user to utilize the service instance.
+// Credentials represents the set of information used by an application or
+// a user to utilize the service instance.
 type Credentials struct {
 	ConnectionString string `json:"connection_string"`
 	UserName         string `json:"username"`

@@ -31,7 +31,8 @@ func main() {
 
 	if port == "" {
 		port = "8080"
-		log.Println("[WARNING] Requires $CF_NOSQL_BROKER_PORT environment variable, defaulting to:" + port)
+		log.Println("[WARNING] Requires $CF_NOSQL_BROKER_PORT environment " +
+			"variable, defaulting to:" + port)
 	}
 
 	// Validate expected key pair files before start their cryptographic validation
@@ -39,22 +40,26 @@ func main() {
 	certFile := os.Getenv("CF_NOSQL_BROKER_CERT")
 
 	if keyFile == "" || certFile == "" {
-		log.Println("[ERROR] Requires $CF_NOSQL_BROKER_KEY and $CF_NOSQL_BROKER_CERT environment variables to start the server.")
+		log.Println("[ERROR] Requires $CF_NOSQL_BROKER_KEY and " +
+			"$CF_NOSQL_BROKER_CERT environment variables to start the server.")
 		return
 	}
 
 	if _, err := os.Stat(keyFile); err != nil {
-		log.Println("[ERROR] The key file " + keyFile + " does not exists in the filesystem.")
+		log.Println("[ERROR] The key file " + keyFile +
+			" does not exists in the filesystem.")
 		return
 	}
 
 	if _, err := os.Stat(certFile); err != nil {
-		log.Println("[ERROR] The certificate file " + certFile + " does not exists in the filesystem.")
+		log.Println("[ERROR] The certificate file " + certFile +
+			" does not exists in the filesystem.")
 		return
 	}
 
 	// Generate the certificate chain to enable TLS
-	// Before generation, the public/private key pair will be validated to see if they meet cryptographic requirements
+	// Before generation, the public/private key pair will be validated to see if
+	// they meet cryptographic requirements
 	cert, err := security.GetCertificateChain(certFile, keyFile)
 	if err != nil {
 		log.Println("[ERROR] " + err.Error())

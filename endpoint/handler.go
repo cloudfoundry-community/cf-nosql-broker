@@ -39,7 +39,9 @@ const (
 
 // GetCatalog returns the NoSQL database services offered.
 func GetCatalog(w http.ResponseWriter, r *http.Request) {
-	log.Printf("[REQUEST] Getting catalog { Hostname: %s, URI: %s, Method: %s, Agent: %s } \n", r.RemoteAddr, r.RequestURI, r.Method, r.UserAgent())
+	log.Printf("[REQUEST] Getting catalog "+
+		"{ Hostname: %s, URI: %s, Method: %s, Agent: %s } \n",
+		r.RemoteAddr, r.RequestURI, r.Method, r.UserAgent())
 
 	plans := []model.ServicePlan{
 		{
@@ -77,14 +79,16 @@ func GetCatalog(w http.ResponseWriter, r *http.Request) {
 
 // Provision starts the database service creation using Docker commands.
 func Provision(w http.ResponseWriter, r *http.Request) {
-	log.Printf("[REQUEST] Provisioning a database service { Hostname: %s, URI: %s, Method: %s, Agent: %s } \n", r.RemoteAddr, r.RequestURI, r.Method, r.UserAgent())
+	log.Printf("[REQUEST] Provisioning a database service "+
+		"{ Hostname: %s, URI: %s, Method: %s, Agent: %s } \n",
+		r.RemoteAddr, r.RequestURI, r.Method, r.UserAgent())
 
 	instanceID := mux.Vars(r)["instance_id"]
 	command := "docker"
 
 	var body *model.ProvisionBody
 	bodyErr := json.NewDecoder(r.Body).Decode(&body)
-	defer r.Body.Close()
+	defer r.Body.Close() // nolint: errcheck
 
 	if bodyErr == io.EOF {
 		log.Println("[RESPONSE] Error: " + bodyErr.Error())
@@ -118,10 +122,13 @@ func Provision(w http.ResponseWriter, r *http.Request) {
 
 	containerPort := port + ":27017"
 	containerName := "cf-mongo-" + instanceID
-	_, err = exec.Command(command, "run", "-d", "--name", containerName, "-p", containerPort, "mongo").Output()
+	_, err = exec.Command(command, "run", "-d",
+		"--name", containerName,
+		"-p", containerPort, "mongo").Output()
 
 	if err != nil {
-		log.Println("[RESPONSE] Error in " + "[" + command + "] run : " + err.Error())
+		log.Println("[RESPONSE] Error in " +
+			"[" + command + "] run : " + err.Error())
 		response := model.ErrorResponse{
 			Description: provisionError,
 		}
@@ -134,20 +141,23 @@ func Provision(w http.ResponseWriter, r *http.Request) {
 		Operation:    "task_01",
 	}
 
-	log.Println("[RESPONSE] Created: The database service " + containerName + " has been created successfully.")
+	log.Println("[RESPONSE] Created: The database service " + containerName +
+		" has been created successfully.")
 	writeResponse(w, http.StatusCreated, response)
 }
 
 // Bind associates the database service to a specific application.
 func Bind(w http.ResponseWriter, r *http.Request) {
-	log.Printf("[REQUEST] Binding a service instance { Hostname: %s, URI: %s, Method: %s, Agent: %s } \n", r.RemoteAddr, r.RequestURI, r.Method, r.UserAgent())
+	log.Printf("[REQUEST] Binding a service instance "+
+		"{ Hostname: %s, URI: %s, Method: %s, Agent: %s } \n",
+		r.RemoteAddr, r.RequestURI, r.Method, r.UserAgent())
 
 	instanceID := mux.Vars(r)["instance_id"]
 	bindingID := mux.Vars(r)["binding_id"]
 
 	var body *model.BindBody
 	bodyErr := json.NewDecoder(r.Body).Decode(&body)
-	defer r.Body.Close()
+	defer r.Body.Close() // nolint: errcheck
 
 	if bodyErr == io.EOF {
 		log.Println("[RESPONSE] Error: " + bodyErr.Error())
@@ -175,24 +185,28 @@ func Bind(w http.ResponseWriter, r *http.Request) {
 	//TODO: Get server instance Hostname
 
 	credentials := model.Credentials{
-		ConnectionString: "MONGO_URL=mongodb://" + body.Database.UserName + ":" + body.Database.Password + "@HOSTNAME:27017/" + body.Database.Name,
-		UserName:         body.Database.UserName,
-		Password:         body.Database.Password,
-		Hostname:         "",
-		DatabaseName:     body.Database.Name,
+		ConnectionString: "MONGO_URL=mongodb://" + body.Database.UserName + ":" +
+			body.Database.Password + "@HOSTNAME:27017/" + body.Database.Name,
+		UserName:     body.Database.UserName,
+		Password:     body.Database.Password,
+		Hostname:     "",
+		DatabaseName: body.Database.Name,
 	}
 
 	response := model.BindResponse{
 		Credentials: credentials,
 	}
 
-	log.Println("[RESPONSE] Bind: The credentials for the service " + instanceID + " has been generated successfully.")
+	log.Println("[RESPONSE] Bind: The credentials for the service " +
+		instanceID + " has been generated successfully.")
 	writeResponse(w, http.StatusCreated, response)
 }
 
 // UnBind deletes any resources associated with the binding.
 func UnBind(w http.ResponseWriter, r *http.Request) {
-	log.Printf("[REQUEST] Unbinding a service instance { Hostname: %s, URI: %s, Method: %s, Agent: %s } \n", r.RemoteAddr, r.RequestURI, r.Method, r.UserAgent())
+	log.Printf("[REQUEST] Unbinding a service instance "+
+		"{ Hostname: %s, URI: %s, Method: %s, Agent: %s } \n",
+		r.RemoteAddr, r.RequestURI, r.Method, r.UserAgent())
 
 	instanceID := mux.Vars(r)["instance_id"]
 	bindingID := mux.Vars(r)["binding_id"]
@@ -212,13 +226,16 @@ func UnBind(w http.ResponseWriter, r *http.Request) {
 	//TODO: Implement unbinding
 
 	response := "{}"
-	log.Println("[RESPONSE] Unbind: The resources associated to the service " + instanceID + " has been deleted successfully.")
+	log.Println("[RESPONSE] Unbind: The resources associated to the service " +
+		instanceID + " has been deleted successfully.")
 	writeResponse(w, http.StatusOK, response)
 }
 
 // Deprovision destroy the container where the database service is running.
 func Deprovision(w http.ResponseWriter, r *http.Request) {
-	log.Printf("[REQUEST] Deprovisioning a database service { Hostname: %s, URI: %s, Method: %s, Agent: %s } \n", r.RemoteAddr, r.RequestURI, r.Method, r.UserAgent())
+	log.Printf("[REQUEST] Deprovisioning a database service "+
+		"{ Hostname: %s, URI: %s, Method: %s, Agent: %s } \n",
+		r.RemoteAddr, r.RequestURI, r.Method, r.UserAgent())
 
 	instanceID := mux.Vars(r)["instance_id"]
 	serviceID := r.FormValue("service_id")
@@ -254,7 +271,8 @@ func Deprovision(w http.ResponseWriter, r *http.Request) {
 		Operation: "task_01",
 	}
 
-	log.Println("[RESPONSE] Destroyed: The database service " + containerName + " has been deleted successfully.")
+	log.Println("[RESPONSE] Destroyed: The database service " + containerName +
+		" has been deleted successfully.")
 	writeResponse(w, http.StatusOK, response)
 }
 
@@ -268,14 +286,16 @@ func writeResponse(w http.ResponseWriter, code int, object interface{}) {
 	}
 
 	w.WriteHeader(code)
-	w.Write(data)
+	w.Write(data) // nolint: errcheck
 }
 
-// nextAvailablePort finds an available port to be used by Docker to run the container.
+// nextAvailablePort finds an available port to be used by Docker to run the
+// container.
 func nextAvailablePort() (string, error) {
 	initHostPort := "59000"
 
-	portsTaken, err := exec.Command("bash", "-c", "docker ps --format '{{.Ports}}' | grep -oE ':[^-]+' | cut -c2-").Output()
+	portsTaken, err := exec.Command("bash", "-c",
+		"docker ps --format '{{.Ports}}' | grep -oE ':[^-]+' | cut -c2-").Output()
 
 	if err != nil {
 		return "", errors.New("[docker] ps error: " + err.Error())

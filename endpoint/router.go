@@ -26,6 +26,7 @@ import (
 
 // Start enables the service broker endpoints and specified their handlers.
 func Start(port string, tlsConfig *tls.Config) {
+	// nolint: lll
 	router := mux.NewRouter()
 	router.HandleFunc("/v2/catalog", GetCatalog).Methods("GET")
 	router.HandleFunc("/v2/service_instances/{instance_id}", Provision).Methods("PUT")

@@ -27,11 +27,11 @@ import (
 
 const (
 	minRSABitModulus          = 2048
-	errorUnsupportedSignature = "unsupported private key signature, only RSA is valid"
+	errorUnsupportedSignature = "unsupported private key signature, only RSA is valid" // nolinter: lll
 )
 
-// meetCryptoRequirements validates that all the requiered cryptographic requierements
-// are applied to the public/private key pairs.
+// meetCryptoRequirements validates that all the requiered cryptographic
+// requierements are applied to the public/private key pairs.
 func meetCryptoRequirements(cert *tls.Certificate) error {
 
 	err := validateSignatureMethod(cert)
@@ -45,15 +45,12 @@ func meetCryptoRequirements(cert *tls.Certificate) error {
 	}
 
 	err = validateSignatureHashAlgorithm(cert)
-	if err != nil {
-		return err
-	}
+	return err
 
-	return nil
 }
 
-// validateSignatureMethod identify the certificate digital signature for the private key.
-// Only certificates signed with RSA are acceptable.
+// validateSignatureMethod identify the certificate digital signature for the
+// private key. Only certificates signed with RSA are acceptable.
 func validateSignatureMethod(cert *tls.Certificate) error {
 
 	switch cert.PrivateKey.(type) {
@@ -65,8 +62,8 @@ func validateSignatureMethod(cert *tls.Certificate) error {
 
 }
 
-// validateCertBitLength evaluates the size of the private key according to the signed method.
-// Expected length: 2048 bits or more.
+// validateCertBitLength evaluates the size of the private key according to the
+// signed method. Expected length: 2048 bits or more.
 func validateCertBitLength(cert *tls.Certificate) error {
 
 	var len int
@@ -78,14 +75,16 @@ func validateCertBitLength(cert *tls.Certificate) error {
 	}
 
 	if len < minRSABitModulus {
-		return errors.New("Validating certificate length, expected " + strconv.Itoa(minRSABitModulus) + " bits but the key is " + strconv.Itoa(len))
+		return errors.New("Validating certificate length, expected " +
+			strconv.Itoa(minRSABitModulus) + " bits but the key is " +
+			strconv.Itoa(len))
 	}
 
 	return nil
 }
 
-// validateSignatureHashAlgorithm identify the hash function used as signature algorithm.
-// Supported functions: SHA256, SHA384 or SHA512.
+// validateSignatureHashAlgorithm identify the hash function used as signature
+// algorithm. Supported functions: SHA256, SHA384 or SHA512.
 func validateSignatureHashAlgorithm(cert *tls.Certificate) error {
 
 	c, err := x509.ParseCertificate(cert.Certificate[0])
@@ -94,15 +93,18 @@ func validateSignatureHashAlgorithm(cert *tls.Certificate) error {
 	}
 
 	signature := c.SignatureAlgorithm
-	if signature == x509.SHA256WithRSA || signature == x509.SHA384WithRSA || signature == x509.SHA512WithRSA {
+	if signature == x509.SHA256WithRSA || signature == x509.SHA384WithRSA ||
+		signature == x509.SHA512WithRSA {
 		return nil
 	}
 
-	return errors.New("x509: " + signature.String() + " is an unsupported signature hash algorithm")
+	return errors.New("x509: " + signature.String() +
+		" is an unsupported signature hash algorithm")
 
 }
 
-// SetCipherSuites will receive a tls.Config pointer and will set CipherSuites array and PreferServerCipherSuites as true.
+// SetCipherSuites will receive a tls.Config pointer and will set CipherSuites
+// array and PreferServerCipherSuites as true.
 func SetCipherSuites(config *tls.Config) {
 	config.CipherSuites = []uint16{
 		tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
@@ -115,7 +117,8 @@ func SetCipherSuites(config *tls.Config) {
 	config.PreferServerCipherSuites = true
 }
 
-// GetCertificateChain generates a TLS certificate from a valid and secure pair of PEM encoded files.
+// GetCertificateChain generates a TLS certificate from a valid and secure pair
+// of PEM encoded files.
 func GetCertificateChain(certFile, keyFile string) (tls.Certificate, error) {
 
 	var cert tls.Certificate
@@ -130,7 +133,8 @@ func GetCertificateChain(certFile, keyFile string) (tls.Certificate, error) {
 	if err != nil {
 		return tls.Certificate{}, err
 	}
-	log.Println("[INFO] Security cryptographic requirements for certificates were all PASSED!")
+	log.Println("[INFO] Security cryptographic requirements for certificates " +
+		"were all PASSED!")
 
 	return cert, nil
 }

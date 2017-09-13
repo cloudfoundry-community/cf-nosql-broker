@@ -24,18 +24,21 @@ type ProvisionBody struct {
 	SpaceID        string `json:"space_guid"`
 }
 
-// ProvisionResponse could be populated with the URL of a web-based portal for the service instance management.
+// ProvisionResponse could be populated with the URL of a web-based portal for
+// the service instance management.
 type ProvisionResponse struct {
 	DashboardURL string `json:"dashboard_url, omitempty"`
 	Operation    string `json:"operation, omitempty"`
 }
 
-// DeprovisionResponse expected {} but may return an identifier representing the operation.
+// DeprovisionResponse expected {} but may return an identifier representing
+// the operation.
 type DeprovisionResponse struct {
 	Operation string `json:"operation, omitempty"`
 }
 
-// ErrorResponse represents the error response during the provision and deprovision implementation.
+// ErrorResponse represents the error response during the provision and
+// deprovision implementation.
 type ErrorResponse struct {
 	Description string `json:"description"`
 }
