@@ -1,4 +1,6 @@
 # NoSQL Service Broker for the CLOUD FOUNDRY* Platform.
+[![Go Report Card](https://goreportcard.com/badge/github.com/cloudfoundry-community/cf-nosql-broker)](https://goreportcard.com/report/github.com/cloudfoundry-community/cf-nosql-broker)
+
 This service broker allows application developers to setup a NoSQL database service based on Docker containers as a managed service for their Cloud Foundry environment.
 
 #### Supported NoSQL databases
